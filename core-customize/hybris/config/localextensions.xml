@@ -133,7 +133,7 @@
     <extension name='auditreportservices' />
     <extension name='deltadetection' />
     <extension name='promotionenginebackoffice' />
-    <!--<extension name='promotionenginesamplesaddon' />-->
+    <extension name='promotionenginesamplesaddon' />
     <extension name='promotionengineservices' />
     <extension name='droolsruleengineservices' />
     <extension name='ordercalculation' />
