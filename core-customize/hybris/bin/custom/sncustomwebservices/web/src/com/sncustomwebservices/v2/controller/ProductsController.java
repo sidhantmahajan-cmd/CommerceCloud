@@ -37,19 +37,6 @@ import de.hybris.platform.webservicescommons.cache.CacheControl;
 import de.hybris.platform.webservicescommons.cache.CacheControlDirective;
 import de.hybris.platform.webservicescommons.swagger.ApiBaseSiteIdParam;
 import de.hybris.platform.webservicescommons.swagger.ApiFieldsParam;
-import com.sncustomwebservices.formatters.WsDateFormatter;
-import com.sncustomwebservices.product.data.ReviewDataList;
-import com.sncustomwebservices.product.data.SuggestionDataList;
-import com.sncustomwebservices.queues.data.ProductExpressUpdateElementData;
-import com.sncustomwebservices.queues.data.ProductExpressUpdateElementDataList;
-import com.sncustomwebservices.queues.impl.ProductExpressUpdateQueue;
-import com.sncustomwebservices.stock.CommerceStockFacade;
-import com.sncustomwebservices.v2.helper.ProductsHelper;
-import com.sncustomwebservices.validator.PointOfServiceValidator;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,9 +44,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -81,6 +73,16 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
+import com.sncustomfacades.product.CustomProductFacade;
+import com.sncustomwebservices.formatters.WsDateFormatter;
+import com.sncustomwebservices.product.data.ReviewDataList;
+import com.sncustomwebservices.product.data.SuggestionDataList;
+import com.sncustomwebservices.queues.data.ProductExpressUpdateElementData;
+import com.sncustomwebservices.queues.data.ProductExpressUpdateElementDataList;
+import com.sncustomwebservices.queues.impl.ProductExpressUpdateQueue;
+import com.sncustomwebservices.stock.CommerceStockFacade;
+import com.sncustomwebservices.v2.helper.ProductsHelper;
+import com.sncustomwebservices.validator.PointOfServiceValidator;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -131,6 +133,8 @@ public class ProductsController extends BaseController
 	private CatalogFacade catalogFacade;
 	@Resource(name = "productsHelper")
 	private ProductsHelper productsHelper;
+	@Resource(name = "customProductFacade")
+	private CustomProductFacade customProductFacade;
 
 	@RequestMapping(value = "/search", method = RequestMethod.GET)
 	@ResponseBody
@@ -146,12 +150,29 @@ public class ProductsController extends BaseController
 			@ApiParam(value = "The number of results returned per page.") @RequestParam(defaultValue = DEFAULT_PAGE_SIZE) final int pageSize,
 			@ApiParam(value = "Sorting method applied to the return results.") @RequestParam(required = false) final String sort,
 			@ApiParam(value = "The context to be used in the search query.") @RequestParam(required = false) final String searchQueryContext,
-			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields, final HttpServletResponse response)
-	{
+			@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields,
+			@ApiParam(value = "Searched Based on Product Name", required = false)
+			@RequestParam(required = false)
+			final String productName,
+			final HttpServletResponse response)	{
+
+		if (productName != null && !productName.isEmpty()){
+			final List<ProductData> product = customProductFacade.getProductsByName(productName);
+			final List<ProductWsDTO> productDto = new LinkedList<ProductWsDTO>();
+			final ProductSearchPageWsDTO pageDto =  new ProductSearchPageWsDTO();
+
+
+			  for (final ProductData data : product) {
+				productDto.add(getDataMapper().map(data, ProductWsDTO.class, fields));
+			  }
+			pageDto.setProducts(productDto);
+			return pageDto;
+		}else{
 		final ProductSearchPageWsDTO result = productsHelper
 				.searchProducts(query, currentPage, pageSize, sort, addPaginationField(fields), searchQueryContext);
 		setTotalCountHeader(response, result.getPagination());
 		return result;
+		}
 	}
 
 

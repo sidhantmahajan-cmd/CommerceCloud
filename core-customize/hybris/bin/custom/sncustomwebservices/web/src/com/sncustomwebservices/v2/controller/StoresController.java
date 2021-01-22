@@ -144,4 +144,14 @@ public class StoresController extends BaseController
 		storeCountListData.setCountriesAndRegionsStoreCount(storeFinderFacade.getStoreCounts());
 		return getDataMapper().map(storeCountListData, StoreCountListWsDTO.class);
 	}
+	
+	@RequestMapping(value = "/getStoreByName/{storeName}", method = RequestMethod.GET)
+	@ApiOperation(nickname = "getStoreByName", value = "Get a store by name", notes = "Returns store based on its unique name.")
+	@ApiBaseSiteIdParam
+	@ResponseBody
+	public PointOfServiceWsDTO getStoreByName(@ApiParam(value = "Store identifier (by store name)", required = true)
+	@PathVariable final String storeName, 
+	@ApiFieldsParam @RequestParam(defaultValue = DEFAULT_FIELD_SET) final String fields)	{
+		return storesHelper.locationDetails(storeName, fields);
+	}
 }
