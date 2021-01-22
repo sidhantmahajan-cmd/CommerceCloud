@@ -171,5 +171,33 @@
 		<property name="sorts" type="java.util.List&lt;de.hybris.platform.commerceservices.search.pagedata.SortData>"/>
 		<property name="pagination" type="de.hybris.platform.commerceservices.search.pagedata.PaginationData"/>
 	</bean>
+	
+	<bean class="com.sncustomwebservices.v2.data.CustomMediaWsDTO">
+		<import type="javax.xml.bind.annotation.XmlRootElement" />
+		<import type="javax.xml.bind.annotation.XmlElements" />
+		<import type="javax.xml.bind.annotation.XmlElement" />
+		<import type="javax.xml.bind.annotation.XmlAccessType" />
+		<import type="javax.xml.bind.annotation.XmlAccessorType" />
+		<annotations>
+            @XmlRootElement
+            @XmlAccessorType(XmlAccessType.FIELD)
+        </annotations>
+		<property name="code" type="String" />
+		<property name="catalogId" type="String" />
+		<property name="catalogVersion" type="String" />
+		<property name="mime" type="String" />
+		<property name="altText" type="String" />
+		<property name="description" type="String" />
+		<property name="url" type="String" />
+		<property name="downloadUrl" type="String" />
+	</bean>
+	
+	<bean class="com.sncustomwebservices.v2.data.BrandWsDTO">
+		<property name="brand" type="java.util.Set&lt;java.lang.String>" />
+	</bean>
+	
+	<bean class="com.sncustomwebservices.facades.data.BrandData">
+		<property name="brand" type="java.util.Set&lt;java.lang.String>"/>
+	</bean>
 
 </beans>
