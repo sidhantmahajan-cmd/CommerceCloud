@@ -285,6 +285,10 @@
                 {
                     "name": "personalizationsearchsmartedit",
                     "contextPath": "/personalizationsearchsmartedit"
+                },
+                {
+                    "name": "sncustomwebservices",
+                    "contextPath": "/rest/v2"
                 }
             ]
         }
